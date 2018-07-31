@@ -38,11 +38,60 @@
             var tiemposEX = []; 
             var dale = true;
             
+            var c = document.getElementById("myCanvas");
+            var ctx = c.getContext("2d");
             
+            function graficarEX() {
+                ctx.beginPath();
+                ctx.lineWidth = "6";
+                ctx.strokeStyle = "coral";
+                ctx.rect(0, 200, 400, 200);
+                
+                //ctx.fillStyle = "coral";
+                //ctx.fill();
+                ctx.stroke();
+                ctx.beginPath();
+                
+                ctx.strokeStyle = "red";
+                ctx.rect(0, 0, 400, 200);
+                //ctx.fillStyle = "red";
+                //ctx.fill();
+                ctx.stroke();
+                
+            }
+            
+            function graficarIN() {
+                
+                ctx.beginPath();
+                ctx.lineWidth = "6";
+                ctx.strokeStyle = "coral";
+                ctx.rect(0, 0, 400, 200);
+                //ctx.fillStyle = "coral";
+                //ctx.fill();
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.strokeStyle = "red";
+                ctx.rect(0, 200, 400, 200);
+                
+                //ctx.fillStyle = "red";
+                //ctx.fill();
+                ctx.stroke();
+            
+            }
+            
+            function limpiarGrafico() {
+                ctx.beginPath();
+                ctx.lineWidth = "6";
+                ctx.strokeStyle = "coral";
+                ctx.rect(0, 0, 400, 200);
+                ctx.rect(0, 200, 400, 200);
+                ctx.stroke();
+            }
 
             function calcular() {
-
+                
                 var testo = "";
+                limpiarGrafico();
                 for (var p = 0; p < tiemposIN.length - 1; p++) {
                     tx = (tiemposIN[p + 1] - tiemposIN[p]);
                     testo += tx + "////" + (60000 / tx).toFixed(2) + "rpm\n";
@@ -50,6 +99,7 @@
                 testo += "total respiraciones: " + tiemposIN.length + "\n";
                 testo += "tiempo total: " + ((tiemposIN[tiemposIN.length - 1] - tiemposIN[0]) / 1000) + "seg";
                 alert(testo);
+                
                 tiemposIN = [];
                 tiemposEX = [];
             }
@@ -57,15 +107,19 @@
             function pedo() {
                 dale = true;
                 tiemposEX[tiemposEX.length] = Date.now();
+                graficarEX();
             }
 
             function pruebakey(e) {
                 if (dale) {
                     tiemposIN[tiemposIN.length] = Date.now();
+                    graficarIN();
                     dale = false;
                 }
 
             }
+            
+            
 
 
         </script>
