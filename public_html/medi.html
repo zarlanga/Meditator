@@ -8,10 +8,12 @@
     </head>
     <body onkeydown="pruebakey(event)" onkeyup="pedo()" >
 
-        <h1>Meditator</h1>
+        <h1 style="text-align: center; color: darkmagenta; font-size: 40px" >Meditator</h1>
+        <canvas id="myCanvas" width="400" height="400" onclick="calcular()"  style="border:1px solid;background-color: coral; float:left; margin:0px 20px"></canvas>
         
-        <canvas id="myCanvas" width="400" height="400" onclick="calcular()"  style="border:1px solid;background-color: coral"></canvas>
+        
         <p> presione cualquier tecla al inhalar y sueltela al exhalar, cuando termine presione el cuadro naranja </p>
+        <p id="resultado"></p>
         <script type="text/javascript">
             /* features
              -duracion de cada respiracion (listo)
@@ -98,9 +100,9 @@
                 limpiarGrafico();
                 for (var p = 0; p < tiemposIN.length - 1; p++) {
                     tx = (tiemposIN[p + 1] - tiemposIN[p]);
-                    testo += tx + "////" + (60000 / tx).toFixed(2) + "rpm\n";
+                    testo += tx + "////" + (60000 / tx).toFixed(2) + "rpm  <br>";
                 }
-                testo += "total respiraciones: " + tiemposIN.length + "\n";
+                testo += "<br>total respiraciones: " + tiemposIN.length + "<br>";
                 
                 tTotal = (tiemposIN[tiemposIN.length - 1] - tiemposIN[0]);
                 tHoras = (tTotal / 3600000).toFixed(0) ;
@@ -114,8 +116,8 @@
                 tSeg = (tTotal/1000).toFixed(2);
                 
                 
-                testo += "tiempo total: " +tHoras + " horas, " + tMin + " min " + tSeg + "seg";
-                alert(testo);
+                testo += "<br>tiempo total: " +tHoras + " horas, " + tMin + " min " + tSeg + "seg";
+                document.getElementById("resultado").innerHTML = testo;
                 
                 tiemposIN = [];
                 tiemposEX = [];
