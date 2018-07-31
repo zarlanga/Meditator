@@ -91,13 +91,30 @@
             function calcular() {
                 
                 var testo = "";
+                var tTotal;
+                var tHoras;
+                var tMin;
+                var tSeg;
                 limpiarGrafico();
                 for (var p = 0; p < tiemposIN.length - 1; p++) {
                     tx = (tiemposIN[p + 1] - tiemposIN[p]);
                     testo += tx + "////" + (60000 / tx).toFixed(2) + "rpm\n";
                 }
                 testo += "total respiraciones: " + tiemposIN.length + "\n";
-                testo += "tiempo total: " + ((tiemposIN[tiemposIN.length - 1] - tiemposIN[0]) / 1000) + "seg";
+                
+                tTotal = (tiemposIN[tiemposIN.length - 1] - tiemposIN[0]);
+                tHoras = (tTotal / 3600000).toFixed(0) ;
+                
+                
+                tTotal -= tHoras * 3600000;
+                
+                tMin = (tTotal/ 60000).toFixed(0);
+                tTotal -= tMin * 60000;
+               // alert(tTotal);
+                tSeg = (tTotal/1000).toFixed(2);
+                
+                
+                testo += "tiempo total: " +tHoras + " horas, " + tMin + " min " + tSeg + "seg";
                 alert(testo);
                 
                 tiemposIN = [];
