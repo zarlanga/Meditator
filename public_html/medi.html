@@ -6,7 +6,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
-    <body onkeydown="pruebakey(event)" onkeyup="pedo()" >
+    <body onkeydown="inhalacion(event)" onkeyup="exhalacion()" >
 
         <h1 style="text-align: center; color: darkmagenta; font-size: 40px" >Meditator</h1>
         <canvas id="myCanvas" width="400" height="400"  style="border:1px solid;background-color: coral; float:left; margin:0px 20px"></canvas>
@@ -18,13 +18,13 @@
         <script type="text/javascript">
             /* features
              -duracion de cada respiracion (listo)
-             -respiraciones por minuto (cada cuanto calcularlas? como mostrarlas?)
-             -tiempo total!
+             -respiraciones por minuto (cada cuanto calcularlas? como mostrarlas?) (ponele que esta)
+             -tiempo total! (listo)
              -comparacion de inhalacion y exhalacion
-             -graficar la duracion de la respiracion?
-             -linea que baje y suba con la respiracion?
+             -graficar la duracion de la respiracion? 
+             -linea que baje y suba con la respiracion? (maomeno, mejorable)
              -promedios de duracion de respiraciones y/o respiraciones por minutos (dividiendo la sesion en x partes?)
-             -ver que onda el redondeo con las horas minutos y segundos
+             -ver que onda el redondeo con las horas minutos y segundos (listo)
              
              
              
@@ -122,47 +122,61 @@
                 var tSeg;
                 var rpm = []; //array para guardar las respiraciones por minuto (eventualmente sacar promedios parciales?)
                 var rpmAC = 0; // acumulador para calcular el promedio
+                var tr = [] ; // array para duracion de respiraciones
                 limpiarGrafico();
 
                 for (var p = 0; p < tiemposIN.length - 1; p++) {
                     tx = (tiemposIN[p + 1] - tiemposIN[p]);
-                    rpm[rpm.length] = (60000 / tx).toFixed(2);
-                    rpmAC += Number(rpm[p]);
-                    testo += tx / 1000 + "segundos////" + rpm[p] + "rpm  <br>";
+                    tr[tr.length] = tx;
+                    rpm[rpm.length] = 60000 / tx;
+                    //rpm[rpm.length] = (60000 / tx).toFixed(2);
+                    rpmAC += rpm[p];
+                    testo += tx / 1000 + "segundos////" + rpm[p].toFixed(2) + "rpm  <br>";
                 }
                 
                 graficarArray(rpm);
+                
+                testo += "<br> Pico maximo: " +  (Math.max.apply(null, rpm)).toFixed(2)+ "rpm<br>";
+                
+                testo += "<br> Pico minimo: " +  (Math.min.apply(null, rpm)).toFixed(2)+ "rpm<br>";
 
-                testo += "<br>total respiraciones: " + tiemposIN.length + "<br>";
+                testo += "<br> Amplitud: " + ( Math.max.apply(null, tr) - Math.min.apply(null, tr)) + "milisegundos <br>";
+
+                testo += "<br>Total respiraciones: " + (tiemposIN.length-1) + "<br>";
 
                 testo += "<br>Respiraciones por minuto promedio: " + (rpmAC / (tiemposIN.length - 1)).toFixed(2) + "<br>";
 
-                tTotal = (tiemposIN[tiemposIN.length - 1] - tiemposIN[0]);
-                tHoras = (tTotal / 3600000).toFixed(0);
-
-
-                tTotal -= tHoras * 3600000;
-
-                tMin = (tTotal / 60000).toFixed(0);
-                tTotal -= tMin * 60000;
-                // alert(tTotal);
-                tSeg = (tTotal / 1000).toFixed(2);
-
-
-                testo += "<br>tiempo total: " + tHoras + " horas, " + tMin + " min " + tSeg + "seg";
+                testo += calcularTTotal() ;
+                
                 document.getElementById("resultado").innerHTML = testo;
 
                 tiemposIN = [];
                 tiemposEX = [];
             }
+            
+            function calcularTTotal() {
+                tTotal = (tiemposIN[tiemposIN.length - 1] - tiemposIN[0]);
+                tHoras = Math.floor(tTotal / 3600000);
 
-            function pedo() {
+
+                tTotal -= tHoras * 3600000;
+
+                tMin = Math.floor(tTotal / 60000);
+                tTotal -= tMin * 60000;
+                // alert(tTotal);
+                tSeg = (tTotal / 1000).toFixed(2);
+                
+                return "<br>Tiempo total: " + tHoras + " horas, " + tMin + " min " + tSeg + "seg";
+
+            }
+
+            function exhalacion() {
                 dale = true;
                 tiemposEX[tiemposEX.length] = Date.now();
                 graficarEX();
             }
 
-            function pruebakey(e) {
+            function inhalacion(e) {
                 if (dale) {
                     tiemposIN[tiemposIN.length] = Date.now();
                     graficarIN();
