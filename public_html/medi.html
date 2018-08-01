@@ -123,15 +123,24 @@
                 var rpm = []; //array para guardar las respiraciones por minuto (eventualmente sacar promedios parciales?)
                 var rpmAC = 0; // acumulador para calcular el promedio
                 var tr = [] ; // array para duracion de respiraciones
+                var tInAc=0; //acumulador tiempo de inhalacion
+                var tExAc=0; // acumulador tiempo exhalacion
                 limpiarGrafico();
+                dataTest = "";
 
                 for (var p = 0; p < tiemposIN.length - 1; p++) {
                     tx = (tiemposIN[p + 1] - tiemposIN[p]);
+                    tIn = tiemposEX[p] - tiemposIN[p];
+                    tEx = tiemposIN[p+1] - tiemposEX[p];
+                    tInAc += tIn;
+                    tExAc += tEx;
+                            
                     tr[tr.length] = tx;
                     rpm[rpm.length] = 60000 / tx;
                     //rpm[rpm.length] = (60000 / tx).toFixed(2);
                     rpmAC += rpm[p];
-                    testo += tx / 1000 + "segundos////" + rpm[p].toFixed(2) + "rpm  <br>";
+                    dataTest += tIn + "IN///" + tEx + "EX<br>";
+                    //dataTest += tx / 1000 + "segundos////" + rpm[p].toFixed(2) + "rpm  <br>";
                 }
                 
                 graficarArray(rpm);
@@ -141,6 +150,8 @@
                 testo += "<br> Pico minimo: " +  (Math.min.apply(null, rpm)).toFixed(2)+ "rpm<br>";
 
                 testo += "<br> Amplitud: " + ( Math.max.apply(null, tr) - Math.min.apply(null, tr)) + "milisegundos <br>";
+                
+                testo += "<br> Proporcion In/Ex: " +( (tInAc > tExAc) ? (tInAc/tExAc).toFixed(2) +  " Inhalacion<br>" : (tExAc/tInAc).toFixed(2) + "Exhalacion<br>" );
 
                 testo += "<br>Total respiraciones: " + (tiemposIN.length-1) + "<br>";
 
@@ -149,6 +160,7 @@
                 testo += calcularTTotal() ;
                 
                 document.getElementById("resultado").innerHTML = testo;
+                document.getElementById("resultado").innerHTML += "<br>" + dataTest;
 
                 tiemposIN = [];
                 tiemposEX = [];
@@ -166,7 +178,7 @@
                 // alert(tTotal);
                 tSeg = (tTotal / 1000).toFixed(2);
                 
-                return "<br>Tiempo total: " + tHoras + " horas, " + tMin + " min " + tSeg + "seg";
+                return "<br>Tiempo total: " + tHoras + " horas, " + tMin + " min " + tSeg + "seg<br>";
 
             }
 
