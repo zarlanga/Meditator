@@ -17,14 +17,19 @@
         <p id="resultado"></p>
         <script type="text/javascript">
             /* features
-             -duracion de cada respiracion (listo)
-             -respiraciones por minuto (cada cuanto calcularlas? como mostrarlas?) (ponele que esta)
-             -tiempo total! (listo)
-             -comparacion de inhalacion y exhalacion
-             -graficar la duracion de la respiracion? 
+             * ver que limite minimo y maximo poner para la IN/EX
+             * -graficar la duracion de la respiracion? respiracion mas larga y mas corta?
+             * -promedios de duracion de respiraciones y/o respiraciones por minutos (dividiendo la sesion en x partes?)
              -linea que baje y suba con la respiracion? (maomeno, mejorable)
-             -promedios de duracion de respiraciones y/o respiraciones por minutos (dividiendo la sesion en x partes?)
+             -respiraciones por minuto (cada cuanto calcularlas? como mostrarlas?) (ponele que esta)
+             -comparacion de inhalacion y exhalacion (ponele que esta)
+             -tiempo total! (listo)
+             -duracion de cada respiracion (listo)
              -ver que onda el redondeo con las horas minutos y segundos (listo)
+             
+             
+             
+             
              
              
              
@@ -74,7 +79,7 @@
                 //ctx.lineWidth = "6";
                 //ctx.strokeStyle = "coral";
                 ctx.fillStyle = "blue";
-                ctx.fillRect(0, 0, 400, 400);
+                ctx.fillRect(0, 0, c.width, c.height);
                 //ctx.rect(0, 0, 400, 200);
                 //ctx.rect(0, 200, 400, 200);
                 ctx.stroke();
@@ -84,16 +89,21 @@
 
                 dist = c.width / (arr.length - 1);
 
-                if (int == 1) {
-                    pmax = Math.max.apply(null, arr);
-                    pmin = Math.min.apply(null, arr);
-                    ctx.lineWidth = 4;
-                    ctx.strokeStyle = "white";
-                } else {
-                    pmax = 1;
-                    pmin = 0;
+                if (int == 1) {//para graficar rpm
+                    var offset;
+                    pmax = Math.max.apply(null, arr)+2;
+                    pmin = Math.min.apply(null, arr)-2;
+                    offset = 1500*1500 / (pmax-pmin); // para que no sea siempre igual la amplitud en el grafico
+                    pmax += offset;
+                    pmin -= offset; 
                     ctx.lineWidth = 1;
                     ctx.strokeStyle = "red";
+                } else {
+                    pmax = Math.max.apply(null, arr)+2;
+                    pmin = Math.min.apply(null, arr)-2;
+                    
+                    ctx.lineWidth = 4;
+                    ctx.strokeStyle = "white";
                 }
                 //alert("maximo="+pmax);
                 //alert("minimo="+pmin);
@@ -123,10 +133,7 @@
                 //dale=false;
 
                 var testo = "";
-                var tTotal;
-                var tHoras;
-                var tMin;
-                var tSeg;
+
                 var rpm = []; //array para guardar las respiraciones por minuto (eventualmente sacar promedios parciales?)
                 var rpmAC = 0; // acumulador para calcular el promedio
                 var tr = []; // array para duracion de respiraciones
@@ -151,9 +158,12 @@
                     dataTest += tIn + "IN///" + tEx + "EX||||||||";
                     dataTest += tx / 1000 + "segundos////" + rpm[p].toFixed(2) + "rpm  <br>";
                 }
+                
+                graficarArray(rpm, 0);
+                graficarArray(tr, 1);
+                //graficarArray(proporcionINEX, 0);
 
-                graficarArray(rpm, 1);
-                graficarArray(proporcionINEX, 0);
+                testo += "<br>Respiraciones por minuto promedio: " + (rpmAC / (tiemposIN.length - 1)).toFixed(2) + "<br>";
 
                 testo += "<br> Pico maximo: " + (Math.max.apply(null, rpm)).toFixed(2) + "rpm<br>";
 
@@ -166,8 +176,6 @@
 
                 testo += "<br>Total respiraciones: " + (tiemposIN.length - 1) + "<br>";
 
-                testo += "<br>Respiraciones por minuto promedio: " + (rpmAC / (tiemposIN.length - 1)).toFixed(2) + "<br>";
-
                 testo += calcularTTotal();
 
                 document.getElementById("resultado").innerHTML = testo;
@@ -178,6 +186,11 @@
             }
 
             function calcularTTotal() {
+                var tTotal;
+                var tHoras;
+                var tMin;
+                var tSeg;
+
                 tTotal = (tiemposIN[tiemposIN.length - 1] - tiemposIN[0]);
                 tHoras = Math.floor(tTotal / 3600000);
 
