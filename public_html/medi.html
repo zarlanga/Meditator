@@ -91,17 +91,17 @@
 
                 if (int == 1) {//para graficar rpm
                     var offset;
-                    pmax = Math.max.apply(null, arr)+2;
-                    pmin = Math.min.apply(null, arr)-2;
-                    offset = 1500*1500 / (pmax-pmin); // para que no sea siempre igual la amplitud en el grafico
+                    pmax = Math.max.apply(null, arr) + 2;
+                    pmin = Math.min.apply(null, arr) - 2;
+                    offset = 1500 * 1500 / (pmax - pmin); // para que no sea siempre igual la amplitud en el grafico
                     pmax += offset;
-                    pmin -= offset; 
+                    pmin -= offset;
                     ctx.lineWidth = 1;
                     ctx.strokeStyle = "red";
                 } else {
-                    pmax = Math.max.apply(null, arr)+2;
-                    pmin = Math.min.apply(null, arr)-2;
-                    
+                    pmax = Math.max.apply(null, arr) + 2;
+                    pmin = Math.min.apply(null, arr) - 2;
+
                     ctx.lineWidth = 4;
                     ctx.strokeStyle = "white";
                 }
@@ -139,9 +139,12 @@
                 var tr = []; // array para duracion de respiraciones
                 var tInAc = 0; //acumulador tiempo de inhalacion
                 var tExAc = 0; // acumulador tiempo exhalacion
+                var tTotal; // array con cantidad de horas en pos [0], min en [1], seg en [2]
                 var proporcionINEX = [];
-                limpiarGrafico();
                 dataTest = "";
+
+                limpiarGrafico();
+
 
                 for (var p = 0; p < tiemposIN.length - 1; p++) {
                     tx = (tiemposIN[p + 1] - tiemposIN[p]);
@@ -158,10 +161,12 @@
                     dataTest += tIn + "IN///" + tEx + "EX||||||||";
                     dataTest += tx / 1000 + "segundos////" + rpm[p].toFixed(2) + "rpm  <br>";
                 }
-                
+
                 graficarArray(rpm, 0);
-                graficarArray(tr, 1);
+                //graficarArray(tr, 1);
                 //graficarArray(proporcionINEX, 0);
+
+                tTotal = calcularHMS(tiemposIN[tiemposIN.length - 1] - tiemposIN[0]); //parametro es la diferencia de tiempo en milisegundos desde el inicio hasta el calcular
 
                 testo += "<br>Respiraciones por minuto promedio: " + (rpmAC / (tiemposIN.length - 1)).toFixed(2) + "<br>";
 
@@ -176,7 +181,10 @@
 
                 testo += "<br>Total respiraciones: " + (tiemposIN.length - 1) + "<br>";
 
-                testo += calcularTTotal();
+
+
+                testo += "<br>Tiempo total: " + tTotal[0] + " horas, " + tTotal[1] + " min,  " + tTotal[2] + "seg<br>";
+                //testo += calcularTTotal();
 
                 document.getElementById("resultado").innerHTML = testo;
                 document.getElementById("resultado").innerHTML += "<br>" + dataTest;
@@ -185,24 +193,31 @@
                 tiemposEX = [];
             }
 
-            function calcularTTotal() {
-                var tTotal;
-                var tHoras;
-                var tMin;
-                var tSeg;
+            function calcularHMS(tMS) {
 
-                tTotal = (tiemposIN[tiemposIN.length - 1] - tiemposIN[0]);
-                tHoras = Math.floor(tTotal / 3600000);
+                //ahre que podria haber usado la funcion tal como estaba antes
+
+                //var tMS; // tiempo en milisegundos
+                //var tHoras;
+                //var tMin;
+                //ar tSeg;
+
+                var Tresultado = [];
+
+                //tMS = (tiemposIN[tiemposIN.length - 1] - tiemposIN[0]);
+
+                Tresultado[0] = Math.floor(tMS / 3600000);
+                tMS -= Tresultado[0] * 3600000;
+
+                Tresultado[1] = Math.floor(tMS / 60000);
+                tMS -= Tresultado[1] * 60000;
 
 
-                tTotal -= tHoras * 3600000;
+                Tresultado[2] = (tMS / 1000).toFixed(2);
 
-                tMin = Math.floor(tTotal / 60000);
-                tTotal -= tMin * 60000;
-                // alert(tTotal);
-                tSeg = (tTotal / 1000).toFixed(2);
+                return Tresultado;
 
-                return "<br>Tiempo total: " + tHoras + " horas, " + tMin + " min " + tSeg + "seg<br>";
+                //return "<br>Tiempo total: " + tHoras + " horas, " + tMin + " min " + tSeg + "seg<br>";
 
             }
 
@@ -217,8 +232,22 @@
                     tiemposIN[tiemposIN.length] = Date.now();
                     graficarIN();
                     dale = false;
+                    actualizarRPMActual();
                 }
 
+            }
+
+            function actualizarRPMActual() {
+                if (tiemposIN.length > 1) {
+                    var rpmNOW = (tiemposIN[ tiemposIN.length - 1] - tiemposIN[tiemposIN.length - 2]);
+                    var tTranscurrido = calcularHMS(tiemposIN[tiemposIN.length - 1] - tiemposIN[0]);
+                    var testo = "";
+                    testo += "<big><big><big><big><big>RPM=" + (60000 / rpmNOW).toFixed(2) + "<br>";
+                    testo += "<br>" + tTranscurrido[0] + " horas, " + tTranscurrido[1] + " min, " + tTranscurrido[2] + "seg<br>";
+
+                    testo += "</big></big></big></big></big>";
+                    document.getElementById("resultado").innerHTML = testo;
+                }
             }
 
 
